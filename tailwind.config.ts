@@ -64,7 +64,7 @@ export default {
           ring: 'hsl(var(--sidebar-ring))'
         },
         remarket: {
-          DEFAULT: '#6b7fdb', // Primary color from the gradient
+          DEFAULT: '#6b7fdb', // Primary color
           dark: '#2d3436',
           muted: '#f5f5f5',
           secondary: '#ff758f',

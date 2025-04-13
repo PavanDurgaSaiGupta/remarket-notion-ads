@@ -150,7 +150,7 @@
 
 /* Form input styling improvements */
 .form-input-visible {
-  @apply bg-white text-remarket-dark border border-gray-300 focus:border-remarket-DEFAULT focus:ring-1 focus:ring-remarket-DEFAULT;
+  @apply bg-white text-remarket-dark border border-gray-300 focus:border-remarket focus:ring-1 focus:ring-remarket;
 }
 
 /* Dark mode toggle styling */
