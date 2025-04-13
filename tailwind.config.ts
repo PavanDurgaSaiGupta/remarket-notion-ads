@@ -64,11 +64,32 @@ export default {
           ring: 'hsl(var(--sidebar-ring))'
         },
         remarket: {
-          DEFAULT: '#6b7fdb', // Primary color
-          dark: '#2d3436',
-          muted: '#f5f5f5',
-          secondary: '#ff758f',
-          accent: '#4cceac'
+          // Light mode colors
+          DEFAULT: '#6B7FDB',        // Primary Brand
+          secondary: '#FF758F',      // Secondary
+          accent: '#4CCEAC',         // Accent (Success)
+          warning: '#FFAA5C',        // Warning
+          dark: '#2D3436',           // Primary Text
+          muted: '#F5F5F5',          // App Background
+          'card-bg': '#FFFFFF',      // Card/Box BG
+          'text-secondary': '#636E72', // Secondary Text
+          'text-on-primary': '#FFFFFF', // Text on Primary
+          'price-tag': '#00B894',    // Price Tag
+          'category-badge': '#A29BFE', // Category Badge
+          'card-border': '#DFE6E9',  // Border (Cards)
+          
+          // Dark mode specific colors for reference - will be used with dark: prefix
+          'dark-primary': '#7E8EF3',   // Dark mode Primary Brand
+          'dark-secondary': '#FF8FA3',  // Dark mode Secondary
+          'dark-accent': '#55EFC4',    // Dark mode Accent
+          'dark-bg': '#1A1A1A',        // Dark mode App Background
+          'dark-card-bg': '#2D3436',    // Dark mode Card/Box BG
+          'dark-navbar': '#252525',     // Dark mode Header/Navbar
+          'dark-text': '#ECF0F1',       // Dark mode Primary Text
+          'dark-text-secondary': '#B2BEC3', // Dark mode Secondary Text
+          'dark-price-tag': '#00CEA9',  // Dark mode Price Tag
+          'dark-category-badge': '#B8A1FF', // Dark mode Category Badge
+          'dark-card-border': '#3E4A4E' // Dark mode Border (Cards)
         }
       },
       borderRadius: {

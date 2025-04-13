@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Open+Sans:wght@400;500;600;700&display=swap');
 
 @tailwind base;
@@ -97,23 +98,23 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-inter font-semibold text-remarket-dark dark:text-white;
+    @apply font-inter font-semibold text-remarket-dark dark:text-remarket-dark-text;
   }
   
   p, span, div, a, button {
-    @apply text-remarket-dark dark:text-gray-200 font-opensans;
+    @apply text-remarket-dark dark:text-remarket-dark-text font-opensans;
   }
   
   input, textarea, select {
-    @apply bg-white text-remarket-dark font-opensans;
+    @apply bg-white text-remarket-dark font-opensans dark:bg-remarket-dark-card-bg dark:text-remarket-dark-text;
   }
   
   .dropdown-content {
-    @apply bg-white shadow-lg rounded-md border border-gray-200;
+    @apply bg-white shadow-lg rounded-md border border-remarket-card-border dark:bg-remarket-dark-card-bg dark:border-remarket-dark-card-border;
   }
 
   label {
-    @apply font-medium text-remarket-dark dark:text-white;
+    @apply font-medium text-remarket-dark dark:text-remarket-dark-text;
   }
 }
 
@@ -150,7 +151,7 @@
 
 /* Form input styling improvements */
 .form-input-visible {
-  @apply bg-white text-remarket-dark border border-gray-300 focus:border-remarket focus:ring-1 focus:ring-remarket;
+  @apply bg-white text-remarket-dark border border-gray-300 focus:border-remarket focus:ring-1 focus:ring-remarket dark:bg-remarket-dark-card-bg dark:text-remarket-dark-text dark:border-remarket-dark-card-border dark:focus:border-remarket-dark-primary dark:focus:ring-remarket-dark-primary;
 }
 
 /* Dark mode toggle styling */
@@ -159,9 +160,9 @@
 }
 
 .dark .dark-mode-toggle {
-  @apply bg-gray-800 text-yellow-400;
+  @apply bg-remarket-dark-navbar text-remarket-warning;
 }
 
 .light .dark-mode-toggle {
-  @apply bg-blue-100 text-indigo-900;
+  @apply bg-blue-100 text-remarket;
 }
