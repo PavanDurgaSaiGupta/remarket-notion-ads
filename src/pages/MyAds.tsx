@@ -20,7 +20,7 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { Loader2, Plus, Pencil, Trash2, CheckSquare } from "lucide-react";
 import { toast } from "sonner";
-import { getMyAds, Ad } from "@/lib/api";
+import { getUserAds, Ad } from "@/lib/api";
 
 const MyAds = () => {
   const { user } = useAuth();
@@ -40,7 +40,7 @@ const MyAds = () => {
     const fetchMyAds = async () => {
       setLoading(true);
       try {
-        const myAds = await getMyAds();
+        const myAds = await getUserAds(user.id);
         setActiveAds(myAds.filter(ad => !ad.is_sold));
         setSoldAds(myAds.filter(ad => ad.is_sold));
       } catch (error) {

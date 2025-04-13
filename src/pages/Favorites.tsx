@@ -27,7 +27,8 @@ const Favorites = () => {
     const fetchFavorites = async () => {
       setLoading(true);
       try {
-        const favoriteAds = await getFavoriteAds();
+        // Pass the user ID to the getFavoriteAds function
+        const favoriteAds = await getFavoriteAds(user.id);
         setFavorites(favoriteAds);
       } catch (error) {
         console.error("Error fetching favorites:", error);
