@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -63,7 +64,7 @@ export default {
           ring: 'hsl(var(--sidebar-ring))'
         },
         remarket: {
-          DEFAULT: '#6b7fdb',
+          DEFAULT: '#6b7fdb', // Primary color from the gradient
           dark: '#2d3436',
           muted: '#f5f5f5',
           secondary: '#ff758f',
