@@ -133,6 +133,7 @@ const mockAds: Ad[] = [
 export const getAds = async (params: {
   category?: string;
   sort?: string;
+  search?: string;
 }): Promise<Ad[]> => {
   await new Promise((resolve) => setTimeout(resolve, 800)); // Simulate network delay
   
@@ -141,6 +142,17 @@ export const getAds = async (params: {
   // Filter by category
   if (params.category) {
     filteredAds = filteredAds.filter(ad => ad.category === params.category);
+  }
+  
+  // Filter by search term
+  if (params.search) {
+    const searchTerm = params.search.toLowerCase();
+    filteredAds = filteredAds.filter(ad => 
+      ad.title.toLowerCase().includes(searchTerm) || 
+      ad.description.toLowerCase().includes(searchTerm) ||
+      ad.location.toLowerCase().includes(searchTerm) ||
+      ad.category.toLowerCase().includes(searchTerm)
+    );
   }
   
   // Sort ads

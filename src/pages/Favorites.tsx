@@ -51,7 +51,7 @@ const Favorites = () => {
       <Navbar />
       
       <main className="container mx-auto px-4 py-8 flex-grow animate-fade-in">
-        <h1 className="text-3xl font-bold mb-6">Your Favorites</h1>
+        <h1 className="text-3xl font-bold mb-6 text-remarket-dark">Your Favorites</h1>
         
         {loading ? (
           <div className="flex justify-center items-center py-20">
@@ -89,7 +89,7 @@ const Favorites = () => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="absolute top-2 right-2 bg-white/80 text-red-500 hover:bg-white/90 hover:text-red-600"
+                    className="absolute top-2 right-2 bg-white/90 text-red-500 hover:bg-white hover:text-red-600"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleRemoveFavorite(ad.id);
@@ -101,7 +101,7 @@ const Favorites = () => {
                 
                 <div className="p-4">
                   <h3 
-                    className="font-semibold text-lg mb-2 hover:text-remarket-DEFAULT cursor-pointer"
+                    className="font-semibold text-lg mb-2 hover:text-remarket-DEFAULT cursor-pointer text-remarket-dark"
                     onClick={() => navigate(`/ad/${ad.id}`)}
                   >
                     {ad.title}
@@ -111,12 +111,12 @@ const Favorites = () => {
                     <p className="text-xl font-bold text-remarket-DEFAULT">
                       ${ad.price.toFixed(2)}
                     </p>
-                    <Badge className="bg-remarket-DEFAULT/20 text-remarket-DEFAULT hover:bg-remarket-DEFAULT/30">
+                    <Badge className="bg-remarket-DEFAULT/20 text-remarket-DEFAULT hover:bg-remarket-DEFAULT/30 font-medium">
                       {ad.category}
                     </Badge>
                   </div>
                   
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-gray-600">
                     {ad.location}
                   </p>
                 </div>
@@ -126,12 +126,12 @@ const Favorites = () => {
         ) : (
           <div className="text-center py-20 bg-gray-50 rounded-lg">
             <Heart className="h-12 w-12 mx-auto mb-3 text-gray-300" />
-            <h3 className="text-xl font-medium mb-2">No favorites yet</h3>
-            <p className="text-gray-500 mb-6">
+            <h3 className="text-xl font-medium mb-2 text-remarket-dark">No favorites yet</h3>
+            <p className="text-gray-600 mb-6">
               Browse listings and click the heart icon to save your favorites.
             </p>
             <Button 
-              className="bg-remarket-DEFAULT hover:bg-remarket-DEFAULT/90"
+              className="bg-remarket-DEFAULT hover:bg-remarket-DEFAULT/90 font-medium"
               onClick={() => navigate("/")}
             >
               <Search className="h-4 w-4 mr-2" />

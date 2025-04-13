@@ -1,5 +1,5 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Open+Sans:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -93,10 +93,20 @@
 
   body {
     @apply bg-remarket-muted text-remarket-dark font-opensans;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-inter font-semibold;
+    @apply font-inter font-semibold text-remarket-dark;
+  }
+  
+  p, span, div, a, button, input, textarea, select {
+    @apply text-remarket-dark font-opensans;
+  }
+  
+  .dropdown-content {
+    @apply bg-white shadow-lg rounded-md border border-gray-200;
   }
 }
 
@@ -110,4 +120,23 @@
 
 .gradient-bg {
   background: linear-gradient(90deg, #6b7fdb, #4cceac);
+}
+
+/* Improved animation timing */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-in {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out;
+}
+
+.animate-slide-in {
+  animation: slide-in 0.5s ease-out;
 }
