@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/context/AuthContext";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -22,6 +23,7 @@ const Signup = () => {
     e.preventDefault();
     
     if (!name || !email || !password) {
+      toast.error("Please fill in all fields");
       return;
     }
     
@@ -29,10 +31,11 @@ const Signup = () => {
     
     try {
       await signUp(email, password);
-      // In a real app, we would redirect to a verification page or login
+      toast.success("Account created successfully! Please log in.");
       navigate("/login");
     } catch (error) {
       console.error("Error during signup:", error);
+      toast.error("Failed to create account. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -43,7 +46,7 @@ const Signup = () => {
       <Navbar />
       
       <main className="flex-grow flex items-center justify-center p-6 animate-fade-in">
-        <Card className="w-full max-w-md shadow-lg">
+        <Card className="w-full max-w-md shadow-lg bg-white dark:bg-gray-800">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold text-center">Create an Account</CardTitle>
           </CardHeader>
@@ -51,18 +54,19 @@ const Signup = () => {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
+                <Label htmlFor="name" className="text-remarket-dark dark:text-white">Full Name</Label>
                 <Input
                   id="name"
                   placeholder="John Doe"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                  className="form-input-visible"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="text-remarket-dark dark:text-white">Email</Label>
                 <Input
                   id="email"
                   type="email"
@@ -70,11 +74,12 @@ const Signup = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  className="form-input-visible"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password" className="text-remarket-dark dark:text-white">Password</Label>
                 <Input
                   id="password"
                   type="password"
@@ -82,8 +87,9 @@ const Signup = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  className="form-input-visible"
                 />
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
                   Password must be at least 8 characters long.
                 </p>
               </div>

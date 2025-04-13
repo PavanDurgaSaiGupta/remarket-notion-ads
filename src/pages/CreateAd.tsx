@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -16,8 +16,9 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/context/AuthContext";
-import { UploadCloud, Loader2 } from "lucide-react";
+import { UploadCloud, Loader2, XCircle } from "lucide-react";
 import { toast } from "sonner";
+import { createAd } from "@/lib/api";
 
 const CreateAd = () => {
   const { user } = useAuth();
@@ -29,22 +30,47 @@ const CreateAd = () => {
   const [category, setCategory] = useState("");
   const [location, setLocation] = useState("");
   const [images, setImages] = useState<File[]>([]);
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Redirect if not logged in
-  useState(() => {
+  useEffect(() => {
     if (!user) {
+      toast.error("Please login to create an ad");
       navigate("/login");
-      toast("Please login to create an ad");
     }
-  });
+  }, [user, navigate]);
   
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
     
+    // Limit to 5 images max
+    if (images.length + files.length > 5) {
+      toast.warning("You can upload a maximum of 5 images");
+      return;
+    }
+    
     const newImages = Array.from(files);
     setImages([...images, ...newImages]);
+    
+    // Create URLs for preview
+    const newImageUrls = newImages.map(file => URL.createObjectURL(file));
+    setImageUrls([...imageUrls, ...newImageUrls]);
+  };
+  
+  const removeImage = (index: number) => {
+    const newImages = [...images];
+    const newImageUrls = [...imageUrls];
+    
+    // Revoke object URL to avoid memory leaks
+    URL.revokeObjectURL(newImageUrls[index]);
+    
+    newImages.splice(index, 1);
+    newImageUrls.splice(index, 1);
+    
+    setImages(newImages);
+    setImageUrls(newImageUrls);
   };
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -55,15 +81,28 @@ const CreateAd = () => {
       return;
     }
     
+    if (parseFloat(price) <= 0) {
+      toast.error("Price must be greater than zero");
+      return;
+    }
+    
     setIsSubmitting(true);
     
     try {
-      // In a real app, this would send data to Supabase
-      // For now, we'll just simulate the process
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const adData = {
+        title,
+        description,
+        price: parseFloat(price),
+        category,
+        location,
+        images: imageUrls.length > 0 ? imageUrls : undefined,
+      };
+      
+      // Create the ad
+      const newAd = await createAd(adData, user);
       
       toast.success("Ad created successfully!");
-      navigate("/my-ads");
+      navigate(`/ad/${newAd.id}`);
     } catch (error) {
       console.error("Error creating ad:", error);
       toast.error("Failed to create ad. Please try again.");
@@ -71,6 +110,13 @@ const CreateAd = () => {
       setIsSubmitting(false);
     }
   };
+  
+  // Cleanup image URLs on unmount
+  useEffect(() => {
+    return () => {
+      imageUrls.forEach(url => URL.revokeObjectURL(url));
+    };
+  }, [imageUrls]);
   
   return (
     <div className="flex flex-col min-h-screen">
@@ -80,7 +126,7 @@ const CreateAd = () => {
         <div className="max-w-3xl mx-auto">
           <h1 className="text-3xl font-bold mb-6">Create New Listing</h1>
           
-          <Card className="shadow-md">
+          <Card className="shadow-md bg-white dark:bg-gray-800">
             <CardHeader>
               <CardTitle>Ad Details</CardTitle>
             </CardHeader>
@@ -95,6 +141,7 @@ const CreateAd = () => {
                     required
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
+                    className="form-input-visible"
                   />
                 </div>
                 
@@ -107,6 +154,7 @@ const CreateAd = () => {
                     rows={5}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
+                    className="form-input-visible"
                   />
                 </div>
                 
@@ -118,28 +166,29 @@ const CreateAd = () => {
                       type="number"
                       placeholder="0.00"
                       required
-                      min="0"
+                      min="0.01"
                       step="0.01"
                       value={price}
                       onChange={(e) => setPrice(e.target.value)}
+                      className="form-input-visible"
                     />
                   </div>
                   
                   <div className="space-y-2">
                     <Label htmlFor="category">Category *</Label>
                     <Select onValueChange={setCategory} value={category}>
-                      <SelectTrigger>
+                      <SelectTrigger className="form-input-visible">
                         <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="electronics">Electronics</SelectItem>
-                        <SelectItem value="furniture">Furniture</SelectItem>
-                        <SelectItem value="clothing">Clothing</SelectItem>
-                        <SelectItem value="vehicles">Vehicles</SelectItem>
-                        <SelectItem value="books">Books</SelectItem>
-                        <SelectItem value="sports">Sports & Outdoors</SelectItem>
-                        <SelectItem value="toys">Toys & Games</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
+                        <SelectItem value="Electronics">Electronics</SelectItem>
+                        <SelectItem value="Furniture">Furniture</SelectItem>
+                        <SelectItem value="Clothing">Clothing</SelectItem>
+                        <SelectItem value="Vehicles">Vehicles</SelectItem>
+                        <SelectItem value="Books">Books</SelectItem>
+                        <SelectItem value="Sports">Sports & Outdoors</SelectItem>
+                        <SelectItem value="Toys">Toys & Games</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -153,14 +202,15 @@ const CreateAd = () => {
                     required
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
+                    className="form-input-visible"
                   />
                 </div>
                 
                 <div className="space-y-2">
                   <Label>Images</Label>
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                  <div className="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-6 text-center">
                     <UploadCloud className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-                    <p className="text-gray-500 mb-2">Drag and drop images here, or click to browse</p>
+                    <p className="text-gray-500 dark:text-gray-400 mb-2">Drag and drop images here, or click to browse</p>
                     <input
                       type="file"
                       accept="image/*"
@@ -173,25 +223,33 @@ const CreateAd = () => {
                       type="button"
                       variant="outline"
                       onClick={() => document.getElementById("image-upload")?.click()}
+                      className="bg-white dark:bg-gray-700"
                     >
                       Select Images
                     </Button>
                     
-                    {images.length > 0 && (
+                    {imageUrls.length > 0 && (
                       <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
-                        {images.map((image, index) => (
-                          <div key={index} className="relative h-24 bg-gray-50 rounded overflow-hidden">
+                        {imageUrls.map((url, index) => (
+                          <div key={index} className="relative h-24 bg-gray-50 dark:bg-gray-700 rounded overflow-hidden">
                             <img
-                              src={URL.createObjectURL(image)}
+                              src={url}
                               alt={`Preview ${index}`}
                               className="h-full w-full object-cover"
                             />
+                            <button
+                              type="button"
+                              className="absolute top-1 right-1 p-1 rounded-full bg-white/70 dark:bg-black/70 hover:bg-white dark:hover:bg-black transition-colors"
+                              onClick={() => removeImage(index)}
+                            >
+                              <XCircle className="h-4 w-4 text-red-500" />
+                            </button>
                           </div>
                         ))}
                       </div>
                     )}
                   </div>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
                     You can upload up to 5 images. First image will be the cover.
                   </p>
                 </div>

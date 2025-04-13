@@ -17,6 +17,9 @@ export interface Ad {
   is_sold: boolean;
 }
 
+// In-memory store for user-created ads during the session
+let userCreatedAds: Ad[] = [];
+
 // Mock data
 const mockAds: Ad[] = [
   {
@@ -129,6 +132,11 @@ const mockAds: Ad[] = [
   },
 ];
 
+// Helper function to combine mock and user-created ads
+const getAllAds = (): Ad[] => {
+  return [...mockAds, ...userCreatedAds];
+};
+
 // Mock API functions
 export const getAds = async (params: {
   category?: string;
@@ -137,11 +145,11 @@ export const getAds = async (params: {
 }): Promise<Ad[]> => {
   await new Promise((resolve) => setTimeout(resolve, 800)); // Simulate network delay
   
-  let filteredAds = [...mockAds];
+  let filteredAds = getAllAds();
   
   // Filter by category
   if (params.category) {
-    filteredAds = filteredAds.filter(ad => ad.category === params.category);
+    filteredAds = filteredAds.filter(ad => ad.category.toLowerCase() === params.category?.toLowerCase());
   }
   
   // Filter by search term
@@ -179,41 +187,77 @@ export const getAds = async (params: {
 export const getAdById = async (id: string): Promise<Ad | null> => {
   await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate network delay
   
-  const ad = mockAds.find(ad => ad.id === id);
+  const allAds = getAllAds();
+  const ad = allAds.find(ad => ad.id === id);
   return ad || null;
 };
 
 export const getUserAds = async (userId: string): Promise<Ad[]> => {
   await new Promise((resolve) => setTimeout(resolve, 800)); // Simulate network delay
   
-  return mockAds.filter(ad => ad.seller_id === userId);
+  const allAds = getAllAds();
+  return allAds.filter(ad => ad.seller_id === userId);
 };
 
 export const getFavoriteAds = async (userId: string): Promise<Ad[]> => {
   await new Promise((resolve) => setTimeout(resolve, 800)); // Simulate network delay
   
   // For this mock, we'll just return a subset of the ads as favorites
-  return mockAds.slice(0, 3);
+  return getAllAds().slice(0, 3);
 };
 
-export const createAd = async (adData: Partial<Ad>): Promise<Ad> => {
+export const createAd = async (adData: Partial<Ad>, user: any): Promise<Ad> => {
   await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
   
-  // Create a new ad with mock data
+  // Create a new ad with the provided data
   const newAd: Ad = {
     id: `ad-${Date.now()}`,
     title: adData.title || "Untitled Ad",
     description: adData.description || "",
     price: adData.price || 0,
-    category: adData.category || "Others",
+    category: adData.category || "Other",
     location: adData.location || "Unknown",
-    seller_id: adData.seller_id || "current-user",
-    seller_name: "Current User",
+    seller_id: user?.id || "current-user",
+    seller_name: user?.name || "Current User",
+    seller_avatar: user?.avatar_url,
     created_at: new Date().toISOString(),
-    images: adData.images || [],
+    images: adData.images || ["https://images.unsplash.com/photo-1581235720704-06d3acfcb36f?q=80&w=1000&auto=format&fit=crop"],
     is_sold: false,
   };
   
-  // In a real app, we would save this to Supabase
+  // Add to our user-created ads
+  userCreatedAds.push(newAd);
+  
   return newAd;
+};
+
+export const updateAdStatus = async (adId: string, isSold: boolean): Promise<Ad | null> => {
+  await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate network delay
+  
+  // Find the ad in user-created ads
+  const adIndex = userCreatedAds.findIndex(ad => ad.id === adId);
+  
+  if (adIndex !== -1) {
+    // Update the ad
+    userCreatedAds[adIndex].is_sold = isSold;
+    return userCreatedAds[adIndex];
+  }
+  
+  // Try to find in mock ads (for demo purposes)
+  const mockAdIndex = mockAds.findIndex(ad => ad.id === adId);
+  if (mockAdIndex !== -1) {
+    mockAds[mockAdIndex].is_sold = isSold;
+    return mockAds[mockAdIndex];
+  }
+  
+  return null;
+};
+
+export const deleteAd = async (adId: string): Promise<boolean> => {
+  await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate network delay
+  
+  const initialLength = userCreatedAds.length;
+  userCreatedAds = userCreatedAds.filter(ad => ad.id !== adId);
+  
+  return userCreatedAds.length < initialLength;
 };

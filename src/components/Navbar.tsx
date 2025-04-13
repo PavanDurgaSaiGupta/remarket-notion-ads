@@ -2,9 +2,10 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Search, Plus, Heart, User, LogOut } from "lucide-react";
+import { Search, Plus, Heart, User, LogOut, Moon, Sun } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
+import { useTheme } from "@/context/ThemeContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,9 +13,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { toast } from "sonner";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -25,12 +28,23 @@ const Navbar = () => {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      toast.success("You have been logged out");
+      navigate("/");
+    } catch (error) {
+      console.error("Error logging out:", error);
+      toast.error("Failed to log out. Please try again.");
+    }
+  };
+
   return (
-    <nav className="border-b bg-white py-4 px-6 sticky top-0 z-10 shadow-sm animate-fade-in">
+    <nav className="border-b bg-white dark:bg-gray-900 py-4 px-6 sticky top-0 z-10 shadow-sm animate-fade-in">
       <div className="container mx-auto flex items-center justify-between">
         <div className="flex items-center gap-10">
           <Link to="/" className="flex items-center">
-            <h1 className="text-2xl font-bold text-remarket">
+            <h1 className="text-2xl font-bold">
               <span className="text-remarket-DEFAULT">Re</span>
               <span className="text-remarket-secondary">Market</span>
             </h1>
@@ -43,12 +57,26 @@ const Navbar = () => {
               placeholder="Search ads..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-gray-50 border-gray-200"
+              className="pl-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-remarket-dark dark:text-white"
             />
           </form>
         </div>
 
         <div className="flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="dark-mode-toggle"
+            onClick={toggleTheme}
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {theme === 'dark' ? (
+              <Sun className="h-5 w-5" />
+            ) : (
+              <Moon className="h-5 w-5" />
+            )}
+          </Button>
+
           {user ? (
             <>
               <Link to="/create-ad">
@@ -74,7 +102,7 @@ const Navbar = () => {
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="font-medium">
+                <DropdownMenuContent align="end" className="font-medium bg-white dark:bg-gray-800">
                   <DropdownMenuItem asChild>
                     <Link to="/profile" className="cursor-pointer">
                       <User className="mr-2 h-4 w-4" /> Profile
@@ -85,7 +113,7 @@ const Navbar = () => {
                       <Plus className="mr-2 h-4 w-4" /> My Ads
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => signOut()} className="cursor-pointer">
+                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
                     <LogOut className="mr-2 h-4 w-4" /> Logout
                   </DropdownMenuItem>
                 </DropdownMenuContent>

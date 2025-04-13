@@ -98,15 +98,23 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-inter font-semibold text-remarket-dark;
+    @apply font-inter font-semibold text-remarket-dark dark:text-white;
   }
   
-  p, span, div, a, button, input, textarea, select {
-    @apply text-remarket-dark font-opensans;
+  p, span, div, a, button {
+    @apply text-remarket-dark dark:text-gray-200 font-opensans;
+  }
+  
+  input, textarea, select {
+    @apply bg-white text-remarket-dark font-opensans;
   }
   
   .dropdown-content {
     @apply bg-white shadow-lg rounded-md border border-gray-200;
+  }
+
+  label {
+    @apply font-medium text-remarket-dark dark:text-white;
   }
 }
 
@@ -139,4 +147,22 @@
 
 .animate-slide-in {
   animation: slide-in 0.5s ease-out;
+}
+
+/* Form input styling improvements */
+.form-input-visible {
+  @apply bg-white text-remarket-dark border border-gray-300 focus:border-remarket-DEFAULT focus:ring-1 focus:ring-remarket-DEFAULT;
+}
+
+/* Dark mode toggle styling */
+.dark-mode-toggle {
+  @apply p-2 rounded-full transition-colors duration-200;
+}
+
+.dark .dark-mode-toggle {
+  @apply bg-gray-800 text-yellow-400;
+}
+
+.light .dark-mode-toggle {
+  @apply bg-blue-100 text-indigo-900;
 }
