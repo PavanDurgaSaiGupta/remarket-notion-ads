@@ -1,6 +1,6 @@
 
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Search, Plus, Heart, User, LogOut, Moon, Sun } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -19,7 +19,17 @@ const Navbar = () => {
   const { user, signOut } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
+
+  // Set searchTerm from URL if present
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const search = params.get("search");
+    if (search) {
+      setSearchTerm(search);
+    }
+  }, [location.search]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,25 +49,29 @@ const Navbar = () => {
     }
   };
 
+  const handleProfileClick = () => {
+    navigate("/profile");
+  };
+
   return (
-    <nav className="border-b bg-white dark:bg-gray-900 py-4 px-6 sticky top-0 z-10 shadow-sm animate-fade-in">
+    <nav className="border-b border-remarket-card-border dark:border-remarket-dark-card-border bg-white dark:bg-remarket-dark-card-bg py-4 px-6 sticky top-0 z-10 shadow-sm animate-fade-in">
       <div className="container mx-auto flex items-center justify-between">
         <div className="flex items-center gap-10">
           <Link to="/" className="flex items-center">
             <h1 className="text-2xl font-bold">
-              <span className="text-remarket-DEFAULT">Re</span>
+              <span className="text-remarket">Re</span>
               <span className="text-remarket-secondary">Market</span>
             </h1>
           </Link>
 
           <form onSubmit={handleSearch} className="hidden md:flex relative w-72">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-2.5 h-4 w-4 text-remarket-text-secondary dark:text-remarket-dark-text-secondary" />
             <Input
               type="text"
               placeholder="Search ads..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-remarket-dark dark:text-white"
+              className="pl-10 bg-white dark:bg-remarket-dark-card-bg border-remarket-card-border dark:border-remarket-dark-card-border text-remarket-dark dark:text-remarket-dark-text"
             />
           </form>
         </div>
@@ -96,17 +110,15 @@ const Navbar = () => {
                   <Button variant="ghost" size="sm" className="flex items-center gap-2">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={user.avatar_url || ""} />
-                      <AvatarFallback className="bg-remarket-DEFAULT text-white">
-                        {user.email?.charAt(0).toUpperCase() || "U"}
+                      <AvatarFallback className="bg-remarket text-remarket-text-on-primary">
+                        {user.email?.charAt(0).toUpperCase() || user.name?.charAt(0).toUpperCase() || "U"}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="font-medium bg-white dark:bg-gray-800">
-                  <DropdownMenuItem asChild>
-                    <Link to="/profile" className="cursor-pointer">
-                      <User className="mr-2 h-4 w-4" /> Profile
-                    </Link>
+                <DropdownMenuContent align="end" className="font-medium bg-white dark:bg-remarket-dark-card-bg">
+                  <DropdownMenuItem onClick={handleProfileClick} className="cursor-pointer">
+                    <User className="mr-2 h-4 w-4" /> Profile
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link to="/my-ads" className="cursor-pointer">
@@ -127,7 +139,7 @@ const Navbar = () => {
                 </Button>
               </Link>
               <Link to="/signup">
-                <Button className="bg-remarket-DEFAULT hover:bg-remarket-DEFAULT/90 font-medium" size="sm">
+                <Button className="bg-remarket hover:bg-remarket/90 font-medium" size="sm">
                   Sign Up
                 </Button>
               </Link>

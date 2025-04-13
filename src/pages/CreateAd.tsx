@@ -18,7 +18,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/context/AuthContext";
 import { UploadCloud, Loader2, XCircle } from "lucide-react";
 import { toast } from "sonner";
-import { createAd } from "@/lib/api";
+import { createAd, uploadImage } from "@/lib/api";
+import { supabase } from "@/integrations/supabase/client";
 
 const CreateAd = () => {
   const { user } = useAuth();
@@ -32,6 +33,7 @@ const CreateAd = () => {
   const [images, setImages] = useState<File[]>([]);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   
   // Redirect if not logged in
   useEffect(() => {
@@ -87,15 +89,30 @@ const CreateAd = () => {
     }
     
     setIsSubmitting(true);
+    setIsUploading(true);
     
     try {
+      // Upload images to Supabase storage
+      const uploadedImageUrls: string[] = [];
+      
+      if (images.length > 0) {
+        for (const image of images) {
+          const imageUrl = await uploadImage(image);
+          if (imageUrl) {
+            uploadedImageUrls.push(imageUrl);
+          }
+        }
+      }
+      
+      setIsUploading(false);
+      
       const adData = {
         title,
         description,
         price: parseFloat(price),
         category,
         location,
-        images: imageUrls.length > 0 ? imageUrls : undefined,
+        images: uploadedImageUrls.length > 0 ? uploadedImageUrls : imageUrls, // Fall back to local URLs for preview
       };
       
       // Create the ad
@@ -108,6 +125,7 @@ const CreateAd = () => {
       toast.error("Failed to create ad. Please try again.");
     } finally {
       setIsSubmitting(false);
+      setIsUploading(false);
     }
   };
   
@@ -126,7 +144,7 @@ const CreateAd = () => {
         <div className="max-w-3xl mx-auto">
           <h1 className="text-3xl font-bold mb-6">Create New Listing</h1>
           
-          <Card className="shadow-md bg-white dark:bg-gray-800">
+          <Card className="shadow-md bg-white dark:bg-remarket-dark-card-bg">
             <CardHeader>
               <CardTitle>Ad Details</CardTitle>
             </CardHeader>
@@ -208,9 +226,9 @@ const CreateAd = () => {
                 
                 <div className="space-y-2">
                   <Label>Images</Label>
-                  <div className="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-6 text-center">
-                    <UploadCloud className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-                    <p className="text-gray-500 dark:text-gray-400 mb-2">Drag and drop images here, or click to browse</p>
+                  <div className="border-2 border-dashed border-remarket-card-border dark:border-remarket-dark-card-border rounded-lg p-6 text-center">
+                    <UploadCloud className="h-8 w-8 mx-auto mb-2 text-remarket-text-secondary dark:text-remarket-dark-text-secondary" />
+                    <p className="text-remarket-text-secondary dark:text-remarket-dark-text-secondary mb-2">Drag and drop images here, or click to browse</p>
                     <input
                       type="file"
                       accept="image/*"
@@ -223,7 +241,7 @@ const CreateAd = () => {
                       type="button"
                       variant="outline"
                       onClick={() => document.getElementById("image-upload")?.click()}
-                      className="bg-white dark:bg-gray-700"
+                      className="bg-white dark:bg-remarket-dark-card-bg"
                     >
                       Select Images
                     </Button>
@@ -231,7 +249,7 @@ const CreateAd = () => {
                     {imageUrls.length > 0 && (
                       <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
                         {imageUrls.map((url, index) => (
-                          <div key={index} className="relative h-24 bg-gray-50 dark:bg-gray-700 rounded overflow-hidden">
+                          <div key={index} className="relative h-24 bg-gray-50 dark:bg-remarket-dark-bg rounded overflow-hidden">
                             <img
                               src={url}
                               alt={`Preview ${index}`}
@@ -249,7 +267,7 @@ const CreateAd = () => {
                       </div>
                     )}
                   </div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                  <p className="text-xs text-remarket-text-secondary dark:text-remarket-dark-text-secondary">
                     You can upload up to 5 images. First image will be the cover.
                   </p>
                 </div>
@@ -257,13 +275,17 @@ const CreateAd = () => {
                 <div className="pt-4">
                   <Button
                     type="submit"
-                    className="w-full bg-remarket-DEFAULT hover:bg-remarket-DEFAULT/90"
+                    className="w-full bg-remarket hover:bg-remarket/90"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    ) : null}
-                    {isSubmitting ? "Creating your ad..." : "Create Ad"}
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        {isUploading ? "Uploading images..." : "Creating your ad..."}
+                      </>
+                    ) : (
+                      "Create Ad"
+                    )}
                   </Button>
                 </div>
               </form>

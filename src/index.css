@@ -92,7 +92,7 @@
   }
 
   body {
-    @apply bg-remarket-muted text-remarket-dark font-opensans;
+    @apply bg-remarket-muted text-remarket-dark font-opensans dark:bg-remarket-dark-bg;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
