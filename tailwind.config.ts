@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,12 +62,24 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// Custom Notion-inspired colors
+				notion: {
+					blue: '#6b7fdb',
+					pink: '#ff758f',
+					green: '#4cceac',
+					background: '#f5f5f5',
+					text: '#2d3436'
 				}
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
+			},
+			fontFamily: {
+				sans: ['Open Sans', 'sans-serif'],
+				heading: ['Inter', 'sans-serif']
 			},
 			keyframes: {
 				'accordion-down': {
@@ -89,6 +102,10 @@ export default {
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out'
+			},
+			boxShadow: {
+				'card': '0 4px 12px rgba(0,0,0,0.05)',
+				'card-hover': '0 6px 16px rgba(0,0,0,0.1)',
 			}
 		}
 	},

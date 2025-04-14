@@ -9,25 +9,49 @@ import NotFound from "./pages/NotFound";
 import AdDetails from "./pages/AdDetails";
 import Favorites from "./pages/Favorites";
 import MyAds from "./pages/MyAds";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import { AuthProvider } from "./contexts/AuthContext";
+import Navbar from "./components/Navbar";
+import AuthGuard from "./components/AuthGuard";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/ad/:id" element={<AdDetails />} />
-          <Route path="/favorites" element={<Favorites />} />
-          <Route path="/my-ads" element={<MyAds />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/ad/:id" element={<AdDetails />} />
+            <Route 
+              path="/favorites" 
+              element={
+                <AuthGuard>
+                  <Favorites />
+                </AuthGuard>
+              } 
+            />
+            <Route 
+              path="/my-ads" 
+              element={
+                <AuthGuard>
+                  <MyAds />
+                </AuthGuard>
+              } 
+            />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
